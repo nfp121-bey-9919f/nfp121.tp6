@@ -8,98 +8,135 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 public class GroupeDeContributeurs extends Cotisant implements Iterable<Cotisant>{
-  private List<Cotisant> liste;
-  
-  public GroupeDeContributeurs(String nomDuGroupe){
-    super(nomDuGroupe);
-    // a completer
-  }
-  
-  public void ajouter(Cotisant cotisant){
-    // a completer
-  }
-  
-  
-  public int nombreDeCotisants(){
-    int nombre = 0;
-    // a completer
-    return nombre;
-  }
-  
-  public String toString(){
-    String str = new String();
-    // a completer
-    return str;
-  }
-  
-  public List<Cotisant> getChildren(){
-    return null;// a completer
-  }
-  
-  public void debit(int somme) throws SoldeDebiteurException{
-    // a completer
-  }
-  
-  public void credit(int somme){
-    // a completer
-  }
-  
-  public int solde(){
-    int solde = 0;
-    // a completer
-    return solde;
-  }
-  
-  // m√©thodes fournies
-  
- public Iterator<Cotisant> iterator(){
-    return new GroupeIterator(liste.iterator());
-  }
-  
-  private class GroupeIterator implements Iterator<Cotisant>{
-    private Stack<Iterator<Cotisant>> stk;
-    
-    public GroupeIterator(Iterator<Cotisant> iterator){
-      this.stk = new Stack<Iterator<Cotisant>>();
-      this.stk.push(iterator);
-    }
-    
-    public boolean hasNext(){
-      if(stk.empty()){
-        return false;
-      }else{
-         Iterator<Cotisant> iterator = stk.peek();
-         if( !iterator.hasNext()){
-           stk.pop();
-           return hasNext();
-         }else{
-           return true;
-         }
-      }
-    }
-    
-    public Cotisant next(){
-      if(hasNext()){
-        Iterator<Cotisant> iterator = stk.peek();
-        Cotisant cpt = iterator.next();
-        if(cpt instanceof GroupeDeContributeurs){
-          GroupeDeContributeurs gr = (GroupeDeContributeurs)cpt;
-          stk.push(gr.liste.iterator());
-        }
-        return cpt;
-      }else{
-        throw new NoSuchElementException();
-      }
-    }
-    public void remove(){
-      throw new UnsupportedOperationException();
-    }
-  }
-  
+    private List<Cotisant> liste;
 
-  public <T> T accepter(Visiteur<T> visiteur){
-    return visiteur.visite(this);
-  }
-  
+    public GroupeDeContributeurs(String nomDuGroupe){
+        super(nomDuGroupe);
+        // a completer
+        this.liste = new ArrayList<Cotisant>();
+    }
+
+    public void ajouter(Cotisant cotisant){
+        // a completer
+        this.liste.add(cotisant);                             
+        cotisant.setParent(this);
+    }
+
+    public int nombreDeCotisants(){
+        int nombre = 0;
+        // a completer
+        Iterator<Cotisant> it = liste.iterator();
+        while(it.hasNext()){                             
+            Cotisant c = it.next(); 
+            if(c instanceof Contributeur){                             
+                nombre +=1; }
+            else{                             
+                nombre += c.nombreDeCotisants(); 
+            } 
+        } 
+        return nombre;
+    }
+
+    public String toString(){
+        String str = new String();
+        // a completer
+        for(Cotisant c: this.liste){                             
+            str +=  c.toString()+" \n " ; 
+        } 
+        return str;
+    }
+
+    public List<Cotisant> getChildren(){
+        // a completer
+        return this.liste;
+    }
+
+    public void debit(int somme) throws SoldeDebiteurException{
+        // a completer
+        if(somme <  0){ 
+            throw new RuntimeException("nombre nÈgatif !!!"); 
+        } 
+        else{
+            for(Cotisant c: this.liste){
+                try{                             
+                    c.debit(somme); 
+                }catch( SoldeDebiteurException e){ 
+                    throw new SoldeDebiteurException(); 
+                } 
+            } 
+        } 
+    }
+
+    public void credit(int somme){
+        // a completer
+        if(somme <  0){ 
+            throw new RuntimeException("nombre nÈgatif !!!"); 
+        } 
+        else{ 
+            for(Cotisant c: this.liste){                             
+                c.credit(somme); 
+            } 
+        } 
+    }
+
+    public int solde(){
+        int solde = 0;
+        // a completer
+        for(Cotisant c: this.liste){                            
+            solde += c.solde(); 
+        } 
+        return solde;
+    }
+
+    // m√©thodes fournies
+
+    public Iterator<Cotisant> iterator(){
+        return new GroupeIterator(liste.iterator());
+    }
+
+    private class GroupeIterator implements Iterator<Cotisant>{
+        private Stack<Iterator<Cotisant>> stk;
+
+        public GroupeIterator(Iterator<Cotisant> iterator){
+            this.stk = new Stack<Iterator<Cotisant>>();
+            this.stk.push(iterator);
+        }
+
+        public boolean hasNext(){
+            if(stk.empty()){
+                return false;
+            }else{
+                Iterator<Cotisant> iterator = stk.peek();
+                if( !iterator.hasNext()){
+                    stk.pop();
+                    return hasNext();
+                }else{
+                    return true;
+                }
+            }
+        }
+
+        public Cotisant next(){
+            if(hasNext()){
+                Iterator<Cotisant> iterator = stk.peek();
+                Cotisant cpt = iterator.next();
+                if(cpt instanceof GroupeDeContributeurs){
+                    GroupeDeContributeurs gr = (GroupeDeContributeurs)cpt;
+                    stk.push(gr.liste.iterator());
+                }
+                return cpt;
+            }else{
+                throw new NoSuchElementException();
+            }
+        }
+
+        public void remove(){
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public <T> T accepter(Visiteur<T> visiteur){
+        return visiteur.visite(this);
+    }
 
 }
