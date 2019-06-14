@@ -2,6 +2,7 @@ package question3;
 
 import question1.*;
 
+
 public abstract class AbstractTransaction{ 
     protected Cotisant cotisant;
     protected int somme;

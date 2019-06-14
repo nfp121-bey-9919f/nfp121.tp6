@@ -33,7 +33,7 @@ public class Contributeur extends Cotisant{
     /**
      * throws RuntimeException new RuntimeException("nombre n√©gatif !!!");
      */
-    public  void credit(int somme){
+    public  void credit(int somme) {
         // a completer
         if(somme <  0){ 
             throw new RuntimeException("nombre nÈgatif !!!"); 
@@ -53,7 +53,7 @@ public class Contributeur extends Cotisant{
             // exception peu probable
             this.solde = somme; // mode efficace ...
         }
-       
+
     }
 
     public <T> T accepter(Visiteur<T> visiteur){
