@@ -65,7 +65,7 @@ public class IHM extends JFrame {
         crediter.addActionListener(new ActionListener(){ 
                 public void actionPerformed(ActionEvent ae){                             
                     AbstractTransaction transaction = new TransactionDebit(g);                            
-                    transaction.credit(Integer.parseInt(somme.getText())); 
+                    g.credit(Integer.parseInt(somme.getText())); 
                     try{                             
                         resultat.setText(Main.arbreXML(g)); 
                         //actualiser(); 
